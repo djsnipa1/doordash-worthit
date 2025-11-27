@@ -1,0 +1,11 @@
+{
+  "deliveryOffer": 10,
+  "time": 5,
+  "tripDistance": 6,
+  "gasPricePerGallon": "3.06",
+  "mpg": "25",
+  "outOfWayDelay": "0",
+  "waitTime": "0",
+  "wearCostPerMile": "0.1043",
+  "preferredHourlyRate": 15
+}

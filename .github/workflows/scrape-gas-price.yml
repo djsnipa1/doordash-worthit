@@ -1,0 +1,47 @@
+name: ⛽ Scrape and Commit Gas Price Data
+
+# This defines when the action will run
+on:
+  # Schedule: Run twice a day (at midnight and noon UTC)
+  schedule:
+    - cron: "0 0,12 * * *"
+  # Manual Trigger: Allows you to run it anytime from the GitHub UI
+  workflow_dispatch:
+
+jobs:
+  scrape_and_commit:
+    runs-on: ubuntu-latest
+
+    # Define environment variables, especially your API key
+    env:
+      # Use a GitHub Secret to securely store your Firecrawl API Key
+      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+
+    steps:
+      - name: ⬇️ Checkout Repository
+        # Action to check out your code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        # Set up the Node.js environment your script needs (assuming Node.js)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Use a modern, stable version
+
+      - name: 📦 Install Dependencies
+        # Install any Node.js dependencies (like the Firecrawl SDK or 'node-fetch')
+        run: npm install
+
+      - name: 🏃 Run Scraper Script
+        # Execute your JavaScript file
+        run: node your-scraper-file-name.js
+
+      - name: ⬆️ Commit Updated Data
+        # Use this community action to commit the changes back to the repository
+        uses: EndBug/add-and-commit@v9
+        with:
+          # Assuming your script creates/updates a file named latest-price.json
+          add: "data/latest-price.json"
+          message: "🤖 Automated data update: Latest Indianapolis gas price."
+          # Use the GitHub Actions bot user for the commit
+          default_author: github_actions

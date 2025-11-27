@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trip Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* Custom input styling */
+      input[type="number"] {
+        appearance: textfield;
+      }
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Smooth transitions */
+      * {
+        transition: all 0.2s ease;
+      }
+
+      /* Gradient background */
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      /* Glass morphism effect */
+      .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      /* Result card animations */
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result-card {
+        animation: slideUp 0.4s ease-out;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50"
+  >
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+      <div class="container mx-auto px-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-center">
+          🚗 Trip Analyzer
+        </h1>
+        <p class="text-center text-purple-100 mt-2 text-sm md:text-base">
+          Analyze delivery trip profitability in seconds
+        </p>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Input Form Card -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+        <h2
+          class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+        >
+          <span class="text-2xl">📊</span> Trip Details
+        </h2>
+
+        <form id="tripForm" class="space-y-6">
+          <!-- Row 1: Offer & Time -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Delivery Offer -->
+            <div class="form-group">
+              <label
+                for="deliveryOffer"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                💵 Delivery Offer
+              </label>
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  id="deliveryOffer"
+                  step="0.01"
+                  min="1"
+                  max="500"
+                  placeholder="0.00"
+                  class="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Time -->
+            <div class="form-group">
+              <label
+                for="time"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                ⏱️ Trip Time
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="time"
+                  step="1"
+                  min="1"
+                  max="240"
+                  placeholder="0"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                  required
+                />
+                <span
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                  >mins</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Distance & Rate -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Trip Distance -->
+            <div class="form-group">
+              <label
+                for="tripDistance"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                📍 Trip Distance
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="tripDistance"
+                  step="0.1"
+                  min="0.1"
+                  max="100"
+                  placeholder="0.0"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                  required
+                />
+                <span
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                  >miles</span
+                >
+              </div>
+            </div>
+
+            <!-- Preferred Hourly Rate -->
+            <div class="form-group">
+              <label
+                for="preferredHourlyRate"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                🎯 Preferred Hourly Rate
+              </label>
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  id="preferredHourlyRate"
+                  step="0.5"
+                  min="5"
+                  max="200"
+                  value="20"
+                  placeholder="20"
+                  class="w-full pl-8 pr-16 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                  required
+                />
+                <span
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                  >/hr</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Advanced Options Toggle -->
+          <div class="border-t-2 border-gray-100 pt-6">
+            <button
+              type="button"
+              id="advancedToggle"
+              class="flex items-center gap-2 text-purple-600 font-semibold hover:text-purple-700 focus:outline-none"
+            >
+              <span id="toggleIcon">▶</span>
+              <span>Advanced Options</span>
+            </button>
+
+            <div id="advancedOptions" class="hidden mt-6 space-y-4">
+              <!-- Row 3: Gas Price & MPG -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Gas Price -->
+                <div class="form-group">
+                  <label
+                    for="gasPricePerGallon"
+                    class="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    ⛽ Gas Price
+                  </label>
+                  <div class="relative">
+                    <span
+                      class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium"
+                      >$</span
+                    >
+                    <input
+                      type="number"
+                      id="gasPricePerGallon"
+                      step="0.01"
+                      min="1"
+                      max="10"
+                      value="3.50"
+                      placeholder="3.50"
+                      class="w-full pl-8 pr-16 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                    />
+                    <span
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                      >/gal</span
+                    >
+                  </div>
+                </div>
+
+                <!-- MPG -->
+                <div class="form-group">
+                  <label
+                    for="mpg"
+                    class="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    🚙 Vehicle MPG
+                  </label>
+                  <div class="relative">
+                    <input
+                      type="number"
+                      id="mpg"
+                      step="0.1"
+                      min="5"
+                      max="100"
+                      value="25"
+                      placeholder="25"
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                    />
+                    <span
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                      >mpg</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 4: Delays -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Out of Way Delay -->
+                <div class="form-group">
+                  <label
+                    for="outOfWayDelay"
+                    class="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    🔄 Out-of-Way Delay
+                  </label>
+                  <div class="relative">
+                    <input
+                      type="number"
+                      id="outOfWayDelay"
+                      step="1"
+                      min="0"
+                      max="120"
+                      value="0"
+                      placeholder="0"
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                    />
+                    <span
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                      >mins</span
+                    >
+                  </div>
+                </div>
+
+                <!-- Wait Time -->
+                <div class="form-group">
+                  <label
+                    for="waitTime"
+                    class="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    ⌛ Wait Time
+                  </label>
+                  <div class="relative">
+                    <input
+                      type="number"
+                      id="waitTime"
+                      step="1"
+                      min="0"
+                      max="120"
+                      value="0"
+                      placeholder="0"
+                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                    />
+                    <span
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                      >mins</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Wear Cost -->
+              <div class="form-group">
+                <label
+                  for="wearCostPerMile"
+                  class="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  🔧 Wear & Tear Cost
+                </label>
+                <div class="relative">
+                  <span
+                    class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium"
+                    >$</span
+                  >
+                  <input
+                    type="number"
+                    id="wearCostPerMile"
+                    step="0.0001"
+                    min="0"
+                    max="1"
+                    value="0.1043"
+                    placeholder="0.1043"
+                    class="w-full pl-8 pr-20 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none text-lg font-medium"
+                  />
+                  <span
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+                    >/mile</span
+                  >
+                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                  Average vehicle depreciation per mile
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analyze Button -->
+          <button
+            type="submit"
+            class="w-full gradient-bg text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-purple-300 text-lg"
+          >
+            🔍 Analyze Trip
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Section -->
+      <div id="resultsSection" class="hidden result-card">
+        <!-- Verdict Card -->
+        <div
+          id="verdictCard"
+          class="rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-white"
+        >
+          <div
+            class="flex flex-col md:flex-row items-center justify-between gap-4"
+          >
+            <div>
+              <p class="text-sm font-medium opacity-90 mb-1">Trip Verdict</p>
+              <h3 id="verdictMessage" class="text-3xl md:text-4xl font-bold">
+                ✅ Accept this trip!
+              </h3>
+            </div>
+            <div class="text-center">
+              <p class="text-sm font-medium opacity-90 mb-1">
+                Effective Hourly Wage
+              </p>
+              <p id="hourlyWage" class="text-4xl md:text-5xl font-bold">
+                $0.00
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <!-- Profit -->
+          <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-600 font-medium text-sm">💰 Profit</span>
+            </div>
+            <p id="profit" class="text-3xl font-bold text-green-600">$0.00</p>
+          </div>
+
+          <!-- Money Per Mile -->
+          <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-600 font-medium text-sm">📏 Per Mile</span>
+            </div>
+            <p id="mpd" class="text-3xl font-bold text-blue-600">$0.00</p>
+          </div>
+
+          <!-- Per Minute -->
+          <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-600 font-medium text-sm"
+                >⏱️ Per Minute</span
+              >
+            </div>
+            <p id="dollarsPerMinute" class="text-3xl font-bold text-purple-600">
+              $0.00
+            </p>
+          </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+          <h3
+            class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+          >
+            <span>📋</span> Cost Breakdown
+          </h3>
+
+          <div class="space-y-4">
+            <!-- Gas Cost -->
+            <div
+              class="flex justify-between items-center py-3 border-b border-gray-100"
+            >
+              <div>
+                <p class="font-semibold text-gray-700">⛽ Gas Cost</p>
+                <p class="text-sm text-gray-500">
+                  <span id="gallons">0.00</span> gallons
+                </p>
+              </div>
+              <p id="gasCost" class="text-xl font-bold text-gray-800">$0.00</p>
+            </div>
+
+            <!-- Wear Cost -->
+            <div
+              class="flex justify-between items-center py-3 border-b border-gray-100"
+            >
+              <div>
+                <p class="font-semibold text-gray-700">🔧 Wear & Tear</p>
+                <p class="text-sm text-gray-500">
+                  <span id="totalMiles">0.00</span> miles
+                </p>
+              </div>
+              <p id="wearCost" class="text-xl font-bold text-gray-800">$0.00</p>
+            </div>
+
+            <!-- Total Costs -->
+            <div
+              class="flex justify-between items-center py-3 bg-gray-50 rounded-lg px-4"
+            >
+              <p class="font-bold text-gray-800 text-lg">Total Costs</p>
+              <p id="totalCosts" class="text-2xl font-bold text-red-600">
+                $0.00
+              </p>
+            </div>
+
+            <!-- Mileage Deduction -->
+            <div class="flex justify-between items-center py-3 mt-4">
+              <div>
+                <p class="font-semibold text-gray-700">
+                  📝 IRS Mileage Deduction
+                </p>
+                <p class="text-xs text-gray-500">
+                  Estimated tax deduction ($0.70/mile)
+                </p>
+              </div>
+              <p id="deduction" class="text-xl font-bold text-green-600">
+                $0.00
+              </p>
+            </div>
+
+            <!-- Trip Summary -->
+            <div class="mt-6 pt-4 border-t-2 border-gray-200">
+              <p class="text-sm text-gray-600 mb-2">Trip Summary</p>
+              <div class="flex flex-wrap gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-500">Time:</span>
+                  <span id="totalTime" class="font-semibold">0 mins</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-500">Distance:</span>
+                  <span id="summaryMiles" class="font-semibold">0.0 mi</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-500">Offer:</span>
+                  <span id="summaryOffer" class="font-semibold">$0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-gray-600 text-sm">
+      <p>🚗 Trip Analyzer - Make smarter delivery decisions</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+      // Helper function for safe number formatting
+      function safeFixed(val, decimals = 2, fallback = "0.00") {
+        if (val === null || val === undefined || isNaN(val)) return fallback;
+        return parseFloat(val).toFixed(decimals);
+      }
+
+      // Toggle advanced options
+      document
+        .getElementById("advancedToggle")
+        .addEventListener("click", function () {
+          const advancedOptions = document.getElementById("advancedOptions");
+          const toggleIcon = document.getElementById("toggleIcon");
+
+          if (advancedOptions.classList.contains("hidden")) {
+            advancedOptions.classList.remove("hidden");
+            toggleIcon.textContent = "▼";
+          } else {
+            advancedOptions.classList.add("hidden");
+            toggleIcon.textContent = "▶";
+          }
+        });
+
+      // Main calculation function
+      function analyzeTrip(params) {
+        const {
+          deliveryOffer,
+          time,
+          tripDistance,
+          gasPricePerGallon,
+          mpg,
+          outOfWayDelay = 0,
+          waitTime = 0,
+          wearCostPerMile = 0.1043,
+          preferredHourlyRate = 20,
+        } = params;
+
+        // Calculate costs
+        const gallons = tripDistance / mpg;
+        const gasCost = gallons * gasPricePerGallon;
+        const wearCost = tripDistance * wearCostPerMile;
+        const totalCosts = gasCost + wearCost;
+
+        // Calculate profit and rates
+        const profit = deliveryOffer - totalCosts;
+        const totalTime = time + outOfWayDelay + waitTime;
+        const effectiveHourlyWage = (profit / totalTime) * 60;
+        const mpd = deliveryOffer / tripDistance;
+        const dollarsPerMinute = profit / totalTime;
+        const deduction = tripDistance * 0.7; // IRS standard mileage rate
+
+        // Determine verdict
+        let verdict;
+        if (effectiveHourlyWage >= preferredHourlyRate) {
+          verdict = {
+            msg: "✅ Accept this trip!",
+            class: "bg-gradient-to-r from-green-500 to-emerald-600",
+          };
+        } else if (effectiveHourlyWage >= preferredHourlyRate * 0.75) {
+          verdict = {
+            msg: "⚠️ Borderline - Consider it",
+            class: "bg-gradient-to-r from-yellow-500 to-orange-500",
+          };
+        } else {
+          verdict = {
+            msg: "❌ Reject - Not worth it",
+            class: "bg-gradient-to-r from-red-500 to-pink-600",
+          };
+        }
+
+        return {
+          deliveryOffer,
+          totalTime,
+          totalMiles: tripDistance,
+          gallons: parseFloat(gallons.toFixed(2)),
+          gasCost: parseFloat(gasCost.toFixed(2)),
+          wearCost: parseFloat(wearCost.toFixed(2)),
+          totalCosts: parseFloat(totalCosts.toFixed(2)),
+          profit: parseFloat(profit.toFixed(2)),
+          effectiveHourlyWage: parseFloat(effectiveHourlyWage.toFixed(2)),
+          mpd: parseFloat(mpd.toFixed(2)),
+          dollarsPerMinute: parseFloat(dollarsPerMinute.toFixed(2)),
+          deduction: parseFloat(deduction.toFixed(2)),
+          verdict,
+        };
+      }
+
+      // Form submission handler
+      document
+        .getElementById("tripForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form values
+          const params = {
+            deliveryOffer:
+              parseFloat(document.getElementById("deliveryOffer").value) || 0,
+            time: parseFloat(document.getElementById("time").value) || 0,
+            tripDistance:
+              parseFloat(document.getElementById("tripDistance").value) || 0,
+            gasPricePerGallon:
+              parseFloat(document.getElementById("gasPricePerGallon").value) ||
+              3.5,
+            mpg: parseFloat(document.getElementById("mpg").value) || 25,
+            outOfWayDelay:
+              parseFloat(document.getElementById("outOfWayDelay").value) || 0,
+            waitTime:
+              parseFloat(document.getElementById("waitTime").value) || 0,
+            wearCostPerMile:
+              parseFloat(document.getElementById("wearCostPerMile").value) ||
+              0.1043,
+            preferredHourlyRate:
+              parseFloat(
+                document.getElementById("preferredHourlyRate").value,
+              ) || 20,
+          };
+
+          // Calculate results
+          const results = analyzeTrip(params);
+
+          // Update verdict card
+          const verdictCard = document.getElementById("verdictCard");
+          verdictCard.className =
+            "rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-white " +
+            results.verdict.class;
+          document.getElementById("verdictMessage").textContent =
+            results.verdict.msg;
+          document.getElementById("hourlyWage").textContent =
+            "$" + safeFixed(results.effectiveHourlyWage, 2);
+
+          // Update key metrics
+          document.getElementById("profit").textContent =
+            "$" + safeFixed(results.profit, 2);
+          document.getElementById("mpd").textContent =
+            "$" + safeFixed(results.mpd, 2);
+          document.getElementById("dollarsPerMinute").textContent =
+            "$" + safeFixed(results.dollarsPerMinute, 2);
+
+          // Update cost breakdown
+          document.getElementById("gallons").textContent = safeFixed(
+            results.gallons,
+            2,
+          );
+          document.getElementById("gasCost").textContent =
+            "$" + safeFixed(results.gasCost, 2);
+          document.getElementById("totalMiles").textContent = safeFixed(
+            results.totalMiles,
+            1,
+          );
+          document.getElementById("wearCost").textContent =
+            "$" + safeFixed(results.wearCost, 2);
+          document.getElementById("totalCosts").textContent =
+            "$" + safeFixed(results.totalCosts, 2);
+          document.getElementById("deduction").textContent =
+            "$" + safeFixed(results.deduction, 2);
+
+          // Update trip summary
+          document.getElementById("totalTime").textContent =
+            results.totalTime + " mins";
+          document.getElementById("summaryMiles").textContent =
+            safeFixed(results.totalMiles, 1) + " mi";
+          document.getElementById("summaryOffer").textContent =
+            "$" + safeFixed(results.deliveryOffer, 2);
+
+          // Show results section
+          document.getElementById("resultsSection").classList.remove("hidden");
+
+          // Smooth scroll to results
+          document
+            .getElementById("resultsSection")
+            .scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+
+      // Input clamping (optional - keeps values in range)
+      document.querySelectorAll('input[type="number"]').forEach((input) => {
+        input.addEventListener("blur", function () {
+          const min = parseFloat(this.min);
+          const max = parseFloat(this.max);
+          let value = parseFloat(this.value);
+
+          if (!isNaN(min) && value < min) this.value = min;
+          if (!isNaN(max) && value > max) this.value = max;
+        });
+      });
+    </script>
+  </body>
+</html>
+

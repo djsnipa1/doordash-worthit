@@ -1,0 +1,18 @@
+{
+    "deliveryOffer": 10,
+    "totalTime": 5,
+    "totalMiles": 6,
+    "gallons": 0.24,
+    "gasCost": 0.7343999999999999,
+    "wearCost": 0.6258,
+    "totalCosts": 1.3601999999999999,
+    "profit": 8.639800000000001,
+    "effectiveHourlyWage": 103.67760000000001,
+    "mpd": 1.6666666666666667,
+    "dollarsPerMinute": 1.7279600000000002,
+    "deduction": 4.199999999999999,
+    "verdict": {
+        "msg": "✅ Accept this trip!",
+        "class": "success"
+    }
+}
