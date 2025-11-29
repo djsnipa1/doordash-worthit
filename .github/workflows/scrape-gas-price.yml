@@ -28,13 +28,10 @@ jobs:
         with:
           version: 10
 
-      - name: Install Puppeteer Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -yq libatk1.0-0 libatk-bridge2.0-0 libcups2 libgtk-3-0 libgbm-dev libnss3 libasound2
-          
       - name: 📦 Install Dependencies
         # Install any Node.js dependencies (like the Firecrawl SDK or 'node-fetch')
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
         run: pnpm install --frozen-lockfile
 
       - name: 🏃 Run Scraper Script

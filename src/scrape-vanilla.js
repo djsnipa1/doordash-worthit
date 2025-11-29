@@ -28,7 +28,10 @@ const outputFilePath = "src/vanilla-extracted-data.json";
 async function scrapePage(url, selector) {
   let browser;
   try {
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({
+      executablePath: "/usr/bin/google-chrome",
+      args: ["--no-sandbox"],
+    });
     const page = await browser.newPage();
 
     console.log(`Navigating to ${url}...`);
